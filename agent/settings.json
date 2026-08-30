@@ -1,0 +1,11 @@
+{
+  "lastChangelogVersion": "0.84.4",
+  "theme": "dark",
+  "defaultProvider": "xiaomi",
+  "defaultModel": "mimo-v2.5",
+  "enabledModels": [
+    "xiaomi/mimo-v2.5",
+    "xiaomi/mimo-v2.5-pro"
+  ],
+  "hideThinkingBlock": true
+}
