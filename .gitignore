@@ -1,5 +1,6 @@
-bin/
-sessions/
-auth.json
+agent/bin/
+agent/sessions/
+agent/models-store.json
+agent/auth.json
 *.env
 *.log
