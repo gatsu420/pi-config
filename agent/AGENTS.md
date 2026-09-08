@@ -1,2 +1,2 @@
-- Do not edit anything unless user gives explicit permission, such as "do it", "execute the change", etc
-- Use brief sentence. For reference: ASD-STE100 Simplified Technical English
+- Lay out plan before editing and ask user for confirmation. Use questionnaire tool whenever fits.
+- Use brief sentence. For reference: ASD-STE100 Simplified Technical English.
