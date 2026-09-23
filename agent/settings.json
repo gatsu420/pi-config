@@ -4,10 +4,11 @@
   "defaultProvider": "xiaomi",
   "defaultModel": "mimo-v2.5",
   "enabledModels": [
-    "xiaomi/mimo-v2.5",
-    "xiaomi/mimo-v2.5-pro",
-    "deepseek/deepseek-v4-flash",
+    "xiaomi/mimo-v2.6-flash",
+    "xiaomi/mimo-v2.6-pro",
+    "deepseek/deepseek-flash",
     "deepseek/deepseek-v4-pro"
   ],
-  "hideThinkingBlock": true
+  "hideThinkingBlock": true,
+  "defaultThinkingLevel": "high"
 }
