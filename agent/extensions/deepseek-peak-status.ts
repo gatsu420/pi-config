@@ -2,32 +2,31 @@
  * DeepSeek Peak-Hour Indicator
  *
  * Shows a live footer status while a DeepSeek model is active:
- *   - Peak:     ● DeepSeek V4 Flash peak · until 11:00 UTC+7
- *   - Off-peak: ○ DeepSeek V4 Flash off-peak · 21:05 UTC+7
+ *   - Peak:     peak 1h 23m left
+ *   - Off-peak: off-peak 2h 5m left
  *
  * Peak windows (UTC, weekdays only — all other times are off-peak):
  *   Mon-Fri 01:00-04:00 and 06:00-10:00
  *
- * The clock text in the footer is shown in UTC+7; peak/off-peak detection
- * itself stays based on the UTC windows above.
+ * The time text shows how long is left in the current state: during peak,
+ * until off-peak starts; during off-peak, until the next peak starts.
  *
  * Boundaries are half-open: 04:00 and 10:00 UTC exactly are off-peak.
- * The indicator appears only for DeepSeek models and clears when the
- * model is switched to another provider. The status refreshes every
- * few seconds so it stays accurate when a session crosses a boundary.
+ *
+ * The indicator uses ctx.ui.setStatus(), so the built-in footer stays
+ * untouched. It shows on its own line below the stats. It appears only for
+ * DeepSeek models and clears when the model is switched to another provider.
+ * The text refreshes every few seconds so it stays accurate when a session
+ * crosses a boundary or the minute changes.
  *
  * Usage: global extension at ~/.pi/agent/extensions/, auto-loaded.
  * Reload with /reload or restart pi.
  */
 
-import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI, ExtensionContext, Theme } from "@earendil-works/pi-coding-agent";
 
 const STATUS_KEY = "deepseek-peak";
 const REFRESH_MS = 10_000; // poll interval; re-renders only when the text changes
-
-// Offset of the clock displayed in the footer (peak windows themselves stay
-// defined in UTC: 01:00-04:00 & 06:00-10:00 UTC, Mon-Fri).
-const DISPLAY_OFFSET_HOURS = 7;
 
 // Peak windows as [startHour, endHour) in UTC. Weekdays only (Mon-Fri).
 const PEAK_WINDOWS: ReadonlyArray<readonly [number, number]> = [
@@ -37,7 +36,6 @@ const PEAK_WINDOWS: ReadonlyArray<readonly [number, number]> = [
 
 interface ModelLike {
 	provider?: string;
-	id?: string;
 }
 
 function isWeekdayUtc(now: Date): boolean {
@@ -45,56 +43,60 @@ function isWeekdayUtc(now: Date): boolean {
 	return day >= 1 && day <= 5;
 }
 
-function currentPeakState(now: Date): { peak: boolean; endsAtHour: number | null } {
+/** Current peak state; endsAt is the exact UTC instant the peak ends. */
+function currentPeakState(now: Date): { peak: boolean; endsAt: Date | null } {
 	if (isWeekdayUtc(now)) {
 		const hourUtc = now.getUTCHours();
 		for (const [start, end] of PEAK_WINDOWS) {
 			if (hourUtc >= start && hourUtc < end) {
-				return { peak: true, endsAtHour: end };
+				const endsAt = new Date(
+					Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), end, 0, 0, 0),
+				);
+				return { peak: true, endsAt };
 			}
 		}
 	}
-	return { peak: false, endsAtHour: null };
+	return { peak: false, endsAt: null };
 }
 
-/** Return the current clock time in the display timezone (UTC+7). */
-function fmtDisplayTime(now: Date): string {
-	const shifted = new Date(now.getTime() + DISPLAY_OFFSET_HOURS * 60 * 60 * 1000);
-	const h = String(shifted.getUTCHours()).padStart(2, "0");
-	const m = String(shifted.getUTCMinutes()).padStart(2, "0");
-	return `${h}:${m} UTC+${DISPLAY_OFFSET_HOURS}`;
+/** The next peak start strictly after `now` (weekdays only). */
+function nextPeakStart(now: Date): Date {
+	const cursor = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+	for (let i = 0; i < 8; i++) {
+		const day = cursor.getUTCDay();
+		if (day >= 1 && day <= 5) {
+			for (const [start] of PEAK_WINDOWS) {
+				const candidate = new Date(cursor.getTime() + start * 60 * 60 * 1000);
+				if (candidate.getTime() > now.getTime()) return candidate;
+			}
+		}
+		cursor.setUTCDate(cursor.getUTCDate() + 1);
+	}
+	return now;
 }
 
-function isDeepseek(model: ModelLike | null | undefined): model is ModelLike {
+/** "1h 23m" / "45m" — hours and minutes left until `target`. */
+function fmtRemaining(target: Date, now: Date): string {
+	const ms = Math.max(0, target.getTime() - now.getTime());
+	const totalMinutes = Math.floor(ms / 60_000);
+	const hours = Math.floor(totalMinutes / 60);
+	const minutes = totalMinutes % 60;
+	return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+}
+
+function isDeepseek(model: ModelLike | null | undefined): boolean {
 	return !!model && model.provider === "deepseek";
 }
 
-/** "deepseek-v4-flash" or name "DeepSeek V4 Flash" -> "V4 Flash" */
-function modelLabel(model: ModelLike): string {
-	const name = (model as ModelLike & { name?: unknown }).name;
-	if (typeof name === "string" && name.trim()) {
-		return name.replace(/^deepseek\s+/i, "").trim() || model.id || name;
-	}
-	const parts = (model.id || "").replace(/^deepseek-/, "").split("-");
-	return parts
-		.filter(Boolean)
-		.map((p) => p.charAt(0).toUpperCase() + p.slice(1))
-		.join(" ");
-}
-
-function buildStatus(ctx: ExtensionContext, model: ModelLike, now: Date): string {
-	const theme = ctx.ui.theme;
+/** Indicator text, in the same dim style as the footer. */
+function buildStatus(theme: Theme, now: Date): string {
 	const state = currentPeakState(now);
-	const modelText = theme.fg("muted", `DeepSeek ${modelLabel(model)}`);
-
-	if (state.peak && state.endsAtHour !== null) {
-		const endLocal = (state.endsAtHour + DISPLAY_OFFSET_HOURS) % 24; // UTC end hour -> UTC+7 clock
-		const end = `${String(endLocal).padStart(2, "0")}:00 UTC+${DISPLAY_OFFSET_HOURS}`;
-		const marker = theme.fg("warning", "● peak");
-		return `${marker} ${modelText} ${theme.fg("dim", `· until ${end}`)}`;
-	}
-	const marker = theme.fg("success", "○ off-peak");
-	return `${marker} ${modelText} ${theme.fg("dim", `· ${fmtDisplayTime(now)}`)}`;
+	const remaining =
+		state.peak && state.endsAt
+			? fmtRemaining(state.endsAt, now)
+			: fmtRemaining(nextPeakStart(now), now);
+	const label = state.peak ? "peak" : "off-peak";
+	return theme.fg("dim", `${label} ${remaining} left`);
 }
 
 export default function (pi: ExtensionAPI) {
@@ -107,7 +109,7 @@ export default function (pi: ExtensionAPI) {
 		const ctx = activeCtx;
 		const model = ctx?.model;
 		if (!ctx || !isDeepseek(model)) return;
-		const text = buildStatus(ctx, model, new Date());
+		const text = buildStatus(ctx.ui.theme, new Date());
 		if (text !== lastText) {
 			lastText = text;
 			ctx.ui.setStatus(STATUS_KEY, text);
