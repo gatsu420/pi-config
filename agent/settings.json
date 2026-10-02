@@ -2,7 +2,7 @@
   "lastChangelogVersion": "1.0.0",
   "theme": "dark",
   "defaultProvider": "xiaomi",
-  "defaultModel": "mimo-v2.5",
+  "defaultModel": "mimo-v2.6-flash",
   "enabledModels": [
     "xiaomi/mimo-v2.6-flash",
     "xiaomi/mimo-v2.6-pro",
@@ -10,5 +10,6 @@
     "deepseek/deepseek-v4-pro"
   ],
   "hideThinkingBlock": true,
-  "defaultThinkingLevel": "high"
+  "defaultThinkingLevel": "high",
+  "defaultTools": ["+codemode"]
 }
