@@ -401,11 +401,12 @@ export default function questionnaire(pi: ExtensionAPI) {
 			}
 
 			const answerLines = result.answers.map((a) => {
-				const qLabel = questions.find((q) => q.id === a.id)?.label || a.id;
+				const question = questions.find((q) => q.id === a.id);
+				const prompt = question?.prompt || question?.label || a.id;
 				if (a.wasCustom) {
-					return `${qLabel}: user wrote: ${a.label}`;
+					return `${prompt} → user wrote: ${a.label}`;
 				}
-				return `${qLabel}: user selected: ${a.index}. ${a.label}`;
+				return `${prompt} → user selected: ${a.index}. ${a.label}`;
 			});
 
 			return {
@@ -436,11 +437,14 @@ export default function questionnaire(pi: ExtensionAPI) {
 				return new Text(theme.fg("warning", "Cancelled"), 0, 0);
 			}
 			const lines = details.answers.map((a) => {
-				if (a.wasCustom) {
-					return `${theme.fg("success", "✓ ")}${theme.fg("accent", a.id)}: ${theme.fg("muted", "(wrote) ")}${a.label}`;
-				}
-				const display = a.index ? `${a.index}. ${a.label}` : a.label;
-				return `${theme.fg("success", "✓ ")}${theme.fg("accent", a.id)}: ${display}`;
+				const question = details.questions.find((q) => q.id === a.id);
+				const prompt = question?.prompt || question?.label || a.id;
+				const answer = a.wasCustom
+					? `${theme.fg("muted", "(wrote) ")}${a.label}`
+					: a.index
+						? `${a.index}. ${a.label}`
+						: a.label;
+				return `${theme.fg("success", "✓ ")}${theme.fg("text", prompt)} ${theme.fg("dim", "→")} ${theme.fg("accent", answer)}`;
 			});
 			return new Text(lines.join("\n"), 0, 0);
 		},
