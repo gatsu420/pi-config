@@ -11,5 +11,8 @@
   ],
   "hideThinkingBlock": true,
   "defaultThinkingLevel": "high",
-  "defaultTools": ["+codemode"]
+  "defaultTools": [
+    "+codemode"
+  ],
+  "showCacheMissNotices": true
 }
