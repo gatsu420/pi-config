@@ -1,13 +1,14 @@
 {
   "lastChangelogVersion": "1.0.0",
   "theme": "dark",
-  "defaultProvider": "xiaomi",
-  "defaultModel": "mimo-v2.6-flash",
+  "defaultProvider": "sumopod",
+  "defaultModel": "deepseek-v4.1-flash:netra",
   "enabledModels": [
     "xiaomi/mimo-v2.6-flash",
     "xiaomi/mimo-v2.6-pro",
     "deepseek/deepseek-flash",
-    "deepseek/deepseek-v4-pro"
+    "deepseek/deepseek-v4-pro",
+    "sumopod/deepseek-v4.1-flash:netra"
   ],
   "hideThinkingBlock": true,
   "defaultThinkingLevel": "high",

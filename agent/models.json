@@ -1,0 +1,20 @@
+{
+  "providers": {
+    "sumopod": {
+      "baseUrl": "https://ai.sumopod.com/v1",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "deepseek-v4.1-flash:netra",
+          "contextWindow": 1000000,
+          "cost": {
+            "input": 0.1,
+            "output": 0.25,
+            "cacheRead": 0.005,
+            "cacheWrite": 0
+          }
+        }
+      ]
+    }
+  }
+}
