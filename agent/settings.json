@@ -14,10 +14,9 @@
   ],
   "hideThinkingBlock": true,
   "defaultThinkingLevel": "high",
-  "defaultTools": [
-    "+codemode"
-  ],
+  "defaultTools": ["+codemode"],
   "showCacheMissNotices": true,
   "deviceId": "34f6bc5d-8c5b-4865-80f4-b57fd1366384",
-  "tuiMode": "regular"
+  "tuiMode": "regular",
+  "packages": ["npm:pi-observational-memory"]
 }
