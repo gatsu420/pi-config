@@ -1,5 +1,6 @@
 agent/bin/
 agent/sessions/
+agent/npm/
 agent/models-store.json
 agent/auth.json
 *.env
