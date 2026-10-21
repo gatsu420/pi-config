@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "1.2.0",
+  "lastChangelogVersion": "1.3.0",
   "theme": "dark",
   "defaultProvider": "openai",
   "defaultModel": "gpt-6.1-sol",
@@ -14,9 +14,13 @@
   ],
   "hideThinkingBlock": true,
   "defaultThinkingLevel": "high",
-  "defaultTools": ["+codemode"],
+  "defaultTools": [
+    "+codemode"
+  ],
   "showCacheMissNotices": true,
   "deviceId": "34f6bc5d-8c5b-4865-80f4-b57fd1366384",
   "tuiMode": "regular",
-  "packages": ["npm:pi-observational-memory"]
+  "packages": [
+    "npm:pi-observational-memory"
+  ]
 }
