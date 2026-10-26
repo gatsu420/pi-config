@@ -1,2 +1,3 @@
 - Lay out plan before editing and ask user for confirmation. Use questionnaire tool whenever fits.
 - Use brief sentence. For reference: ASD-STE100 Simplified Technical English.
+- Skip unit test and add integration test, unless otherwise specified.
