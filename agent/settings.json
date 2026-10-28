@@ -19,7 +19,7 @@
   ],
   "showCacheMissNotices": true,
   "deviceId": "34f6bc5d-8c5b-4865-80f4-b57fd1366384",
-  "tuiMode": "regular",
+  "tuiMode": "fullscreen",
   "terminal": {
     "images": false
   },
