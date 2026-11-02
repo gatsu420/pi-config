@@ -9,9 +9,9 @@
     "deepseek/deepseek-flash",
     "deepseek/deepseek-v4-pro",
     "sumopod/deepseek-v4.1-flash:netra",
+    "openai/gpt-6.1-terra",
     "openai/gpt-6.1-sol",
-    "openai/gpt-6-astra",
-    "openai/gpt-6.1-terra"
+    "openai/gpt-6-astra"
   ],
   "hideThinkingBlock": true,
   "defaultThinkingLevel": "high",
@@ -26,5 +26,8 @@
   },
   "packages": [
     "npm:pi-observational-memory"
-  ]
+  ],
+  "modelThinkingLevels": {
+    "openai/gpt-6.1-terra": "xhigh"
+  }
 }
