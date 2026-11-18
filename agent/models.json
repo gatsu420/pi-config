@@ -8,9 +8,19 @@
           "id": "deepseek-v4.1-flash:netra",
           "contextWindow": 1000000,
           "cost": {
-            "input": 0.1,
-            "output": 0.25,
-            "cacheRead": 0.005,
+            "input": 0.3,
+            "cacheRead": 0.01,
+            "output": 1.2,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "deepseek-v4.1-flash-1017",
+          "contextWindow": 1000000,
+          "cost": {
+            "input": 0.15,
+            "cacheRead": 0.003,
+            "output": 0.6,
             "cacheWrite": 0
           }
         }
