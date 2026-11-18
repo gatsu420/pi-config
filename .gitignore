@@ -3,5 +3,6 @@ agent/sessions/
 agent/npm/
 agent/models-store.json
 agent/auth.json
+agent/mcp-auth.json
 *.env
 *.log
